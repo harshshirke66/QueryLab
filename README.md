@@ -199,20 +199,13 @@ A dark-first interface inspired by Linear, Vercel, and Stripe.
 
 ---
 
-## 📜 License
+## 👥 Demo Accounts (1-Click Instant Login)
 
-Released under the [MIT License](./LICENSE).
+No signup required for evaluation:
+- **Candidate Demo**: `candidate@querylab.dev` / `candidate123` (Alex Rivera, 850 XP, 5-day streak)
+- **Admin Demo**: `admin@querylab.dev` / `admin123` (Sarah Chen, Lead Interview Architect & Question Verifier)
 
-<div align="center">
+---
 
-<br />
-
-**If QueryLab helps you land an interview, drop a ⭐ on the repo.**
-
-<sub>Built for people who think in queries.</sub>
-
-<br />
-
-<sub>© 2026 Harsh Shirke · <a href="https://github.com/harshshirke66">@harshshirke66</a> · All rights reserved.</sub>
-
-</div>
+## 🛡️ License
+MIT License. Built for production interview preparation.
