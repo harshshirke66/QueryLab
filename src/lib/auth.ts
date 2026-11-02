@@ -38,17 +38,6 @@ export const DEMO_USERS: Record<string, User & { passwordHash: string }> = {
     passwordHash: hashPassword('candidate123'),
     createdAt: '2026-01-01T00:00:00Z',
   },
-  admin: {
-    id: 'user_admin_demo',
-    email: 'admin@querylab.dev',
-    name: 'Sarah Chen (Admin)',
-    role: 'ADMIN',
-    targetRole: 'Lead Interview Architect',
-    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=128&q=80',
-    xp: 3200,
-    passwordHash: hashPassword('admin123'),
-    createdAt: '2025-11-01T00:00:00Z',
-  },
 };
 
 export async function createSessionToken(payload: SessionPayload): Promise<string> {
@@ -77,18 +66,6 @@ export async function getSessionUser(): Promise<User | null> {
     }
     const session = await verifySessionToken(token);
     if (!session) return mockStore.getDemoUser();
-
-    if (session.role === 'ADMIN') {
-      return {
-        id: session.userId,
-        email: session.email,
-        name: session.name,
-        role: 'ADMIN',
-        targetRole: 'Lead Interview Architect',
-        xp: 3200,
-        createdAt: '2025-11-01T00:00:00Z',
-      };
-    }
 
     return {
       id: session.userId,

@@ -91,37 +91,6 @@ export default function Navbar() {
     setMoreDropdownOpen(false);
   }, [pathname]);
 
-  const switchRole = async (role: 'candidate' | 'admin') => {
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ demoType: role }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        if (role === 'admin') {
-          saveProgress({
-            ...progress,
-            name: 'Sarah Chen (Admin)',
-            email: 'admin@querylab.dev',
-            role: 'ADMIN',
-            targetRole: 'Lead Interview Architect',
-          });
-        } else {
-          saveProgress({
-            ...progress,
-            role: 'CANDIDATE',
-          });
-        }
-        setUserDropdownOpen(false);
-        window.location.reload();
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const primaryNavLinks = [
     { href: '/questions', label: 'Questions', icon: Terminal },
     { href: '/concepts', label: 'Concepts', icon: BookOpen },
@@ -270,7 +239,7 @@ export default function Navbar() {
                     {safeProgress.name || 'Candidate'}
                   </span>
                   <span suppressHydrationWarning className="text-[10px] text-[#969EAA] leading-none mt-1">
-                    {safeProgress.role === 'ADMIN' ? '🛡️ Admin' : safeProgress.targetRole || 'Candidate'}
+                    {safeProgress.targetRole || 'Data Analyst'}
                   </span>
                 </div>
                 <ChevronDown className={`h-3 w-3 text-[#969EAA] transition-transform shrink-0 ${userDropdownOpen ? 'rotate-180' : ''}`} />
@@ -282,9 +251,7 @@ export default function Navbar() {
                     <p className="text-xs font-bold text-[#F4F5F7]">{safeProgress.name || 'Candidate'}</p>
                     <p className="text-[11px] text-[#969EAA] truncate">{safeProgress.email || 'candidate@querylab.dev'}</p>
                     <div className="mt-1 flex items-center gap-1.5 text-[10px] font-mono text-[#A3E635]">
-                      <span>Role: {safeProgress.role}</span>
-                      <span>•</span>
-                      <span>{safeProgress.targetRole}</span>
+                      <span>{safeProgress.targetRole || 'Data Analyst'}</span>
                     </div>
                   </div>
 
@@ -313,43 +280,6 @@ export default function Navbar() {
                       <BarChart3 className="h-4 w-4 text-[#969EAA]" />
                       <span>Performance Analytics</span>
                     </Link>
-                    {progress.role === 'ADMIN' && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2 text-xs text-[#A3E635] hover:bg-[#1D2430] transition-colors"
-                      >
-                        <ShieldCheck className="h-4 w-4" />
-                        <span>Admin Console</span>
-                      </Link>
-                    )}
-                  </div>
-
-                  {/* 1-Click Role Switcher */}
-                  <div className="border-t border-[#29313D] px-4 py-2.5">
-                    <p className="text-[10px] font-mono uppercase text-[#969EAA] mb-1.5">Switch Demo Mode</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => switchRole('candidate')}
-                        className={`text-xs py-1.5 px-2 rounded-lg text-center transition-colors ${
-                          progress.role === 'CANDIDATE'
-                            ? 'bg-[#A3E635]/20 text-[#A3E635] font-bold border border-[#A3E635]/40'
-                            : 'bg-[#11151B] text-[#969EAA] hover:text-[#F4F5F7]'
-                        }`}
-                      >
-                        Candidate
-                      </button>
-                      <button
-                        onClick={() => switchRole('admin')}
-                        className={`text-xs py-1.5 px-2 rounded-lg text-center transition-colors ${
-                          progress.role === 'ADMIN'
-                            ? 'bg-[#A3E635]/20 text-[#A3E635] font-bold border border-[#A3E635]/40'
-                            : 'bg-[#11151B] text-[#969EAA] hover:text-[#F4F5F7]'
-                        }`}
-                      >
-                        Admin
-                      </button>
-                    </div>
                   </div>
 
                   <div className="border-t border-[#29313D] pt-1">

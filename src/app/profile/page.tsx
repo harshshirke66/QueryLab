@@ -32,7 +32,7 @@ export default function ProfilePage() {
   const user = {
     name: progress.name,
     email: progress.email,
-    role: progress.role === 'ADMIN' ? 'Admin / Lead' : 'Candidate',
+    role: 'Candidate',
     targetRole: progress.targetRole,
     xp: progress.xp,
     solved: progress.solvedQuestions.length,

@@ -9,7 +9,6 @@ async function main() {
 
   // 1. Seed Demo Users
   const candidateHash = hashPassword('candidate123');
-  const adminHash = hashPassword('admin123');
 
   await prisma.user.upsert({
     where: { email: 'candidate@querylab.dev' },
@@ -22,20 +21,6 @@ async function main() {
       targetRole: 'Data Analyst',
       xp: 850,
       passwordHash: candidateHash,
-    },
-  });
-
-  await prisma.user.upsert({
-    where: { email: 'admin@querylab.dev' },
-    update: {},
-    create: {
-      id: 'user_admin_demo',
-      email: 'admin@querylab.dev',
-      name: 'Sarah Chen (Admin)',
-      role: 'ADMIN',
-      targetRole: 'Lead Interview Architect',
-      xp: 3200,
-      passwordHash: adminHash,
     },
   });
 

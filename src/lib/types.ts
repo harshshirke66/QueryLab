@@ -1,4 +1,4 @@
-export type Role = 'CANDIDATE' | 'ADMIN';
+export type Role = 'CANDIDATE';
 
 export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 

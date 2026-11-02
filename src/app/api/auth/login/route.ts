@@ -12,19 +12,12 @@ export async function POST(req: Request) {
 
     if (demoType === 'candidate') {
       userToAuth = DEMO_USERS.candidate;
-    } else if (demoType === 'admin') {
-      userToAuth = DEMO_USERS.admin;
     } else if (email) {
       const candidateMatch = DEMO_USERS.candidate.email.toLowerCase() === email.toLowerCase();
-      const adminMatch = DEMO_USERS.admin.email.toLowerCase() === email.toLowerCase();
 
       if (candidateMatch) {
         if (password && verifyPassword(password, DEMO_USERS.candidate.passwordHash)) {
           userToAuth = DEMO_USERS.candidate;
-        }
-      } else if (adminMatch) {
-        if (password && verifyPassword(password, DEMO_USERS.admin.passwordHash)) {
-          userToAuth = DEMO_USERS.admin;
         }
       } else {
         // Create real candidate account

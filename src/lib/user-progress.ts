@@ -3,7 +3,7 @@
 export interface UserProgressData {
   name: string;
   email: string;
-  role: 'CANDIDATE' | 'ADMIN';
+  role: 'CANDIDATE';
   targetRole: string;
   avatarUrl: string;
   xp: number;

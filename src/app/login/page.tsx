@@ -83,7 +83,7 @@ export default function LoginPage() {
 
       setSuccessMessage(authMode === 'signup' ? 'Account created! Redirecting to workspace...' : 'Signed in! Redirecting...');
       setTimeout(() => {
-        window.location.href = data.user?.role === 'ADMIN' ? '/admin' : '/dashboard';
+        window.location.href = '/dashboard';
       }, 700);
     } catch (err: any) {
       setError(err.message || 'An error occurred during authentication.');
