@@ -70,14 +70,8 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-[#29313D] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#64748B]">
-          <p>© 2026 QUERYLAB. Built with Next.js App Router, Neon PostgreSQL, Prisma ORM & PGlite.</p>
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1">
-              Isolated PostgreSQL Sandbox <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#A3E635]"></span> Active
-            </span>
-            <span>•</span>
-            <a href="/admin" className="text-[#969EAA] hover:text-[#A3E635] transition-colors">Admin Console</a>
-          </div>
+          <p>© 2026 QUERYLAB. All rights reserved.</p>
+          <p className="text-[#64748B]">Think in Queries. Crack Real Interviews.</p>
         </div>
       </div>
     </footer>

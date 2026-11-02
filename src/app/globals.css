@@ -9022,17 +9022,6 @@ code, pre, .font-mono {
   padding-top: calc(var(--spacing) * 8);
 }
 
-.w-1\.5 {
-  width: calc(var(--spacing) * 1.5);
-}
-
-
-
-
-
-
-
-
 
 
 
@@ -9581,6 +9570,10 @@ code, pre, .font-mono {
 
 .caret-\[\#A3E635\] {
   caret-color: #A3E635;
+}
+
+.w-1\.5 {
+  width: calc(var(--spacing) * 1.5);
 }
 
 @media (width >= 48rem) {
@@ -11819,6 +11812,9 @@ code, pre, .font-mono {
 .isolate {
   isolation: isolate;
 }
+
+
+
 
 
 
