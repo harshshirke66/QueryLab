@@ -1,0 +1,31 @@
+[
+  {
+    "id": "q_ai_1793641712561",
+    "slug": "ai-detect-rapid-multi-zip-card-activity-with-window-functions",
+    "title": "Detect Rapid Multi‑Zip Card Activity with Window Functions",
+    "difficulty": "MEDIUM",
+    "category": "SQL",
+    "roleTarget": "Data Analyst",
+    "problemStatement": "A fintech unicorn wants to flag potentially fraudulent credit cards that exhibit a **velocity anomaly**: more than three transactions occurring in **different zip codes** within any rolling **20‑minute window**. For each flagged transaction you must return the card identifier, transaction timestamp, the zip code of that transaction, and the count of distinct zip codes seen in the preceding 20 minutes (including the current one). The solution must:\n- Use PostgreSQL‑compatible window functions.\n- Correctly handle NULL zip codes by treating them as a distinct placeholder (e.g., 'UNKNOWN') using COALESCE.\n- Properly rank ties when multiple transactions have the same distinct‑zip count (use DENSE_RANK or similar).\n- Return only rows where the distinct‑zip count exceeds 3.\n\n**Schema** (presented as markdown tables for clarity):\n\n| Table | Columns |\n|-------|----------|\n| **cards** | `card_id` INTEGER PK, `card_number` VARCHAR(16), `holder_name` VARCHAR(100) |\n| **transactions** | `txn_id` INTEGER PK, `card_id` INTEGER FK → cards(card_id), `transaction_ts` TIMESTAMP NOT NULL, `amount` DECIMAL(10,2), `zip_code` VARCHAR(10) (may be NULL) |\n\nWrite a single SQL query that solves the problem using window functions, handling the edge cases described.",
+    "schemaSql": "CREATE TABLE cards (card_id INTEGER PRIMARY KEY, card_number VARCHAR(16) NOT NULL, holder_name VARCHAR(100)); CREATE TABLE transactions (txn_id INTEGER PRIMARY KEY, card_id INTEGER NOT NULL REFERENCES cards(card_id), transaction_ts TIMESTAMP NOT NULL, amount DECIMAL(10,2), zip_code VARCHAR(10));",
+    "seedSql": "INSERT INTO cards (card_id, card_number, holder_name) VALUES (1,'1111222233334444','Alice'), (2,'5555666677778888','Bob'); INSERT INTO transactions (txn_id, card_id, transaction_ts, amount, zip_code) VALUES (101,1,'2023-07-01 10:00:00',120.00,'94105'), (102,1,'2023-07-01 10:05:00',45.50,'94107'), (103,1,'2023-07-01 10:10:00',33.20,NULL), (104,1,'2023-07-01 10:12:00',80.00,'94109'), (105,1,'2023-07-01 10:18:00',22.10,'94111'), (106,2,'2023-07-01 11:00:00',150.00,'10001'), (107,2,'2023-07-01 11:10:00',60.00,'10002'), (108,2,'2023-07-01 11:25:00',30.00,'10003');",
+    "solutionSql": "WITH distinct_zip_counts AS ( SELECT t1.txn_id, t1.card_id, t1.transaction_ts, t1.zip_code, COUNT(DISTINCT COALESCE(t2.zip_code,'UNKNOWN')) AS zip_cnt FROM transactions t1 JOIN transactions t2 ON t2.card_id = t1.card_id AND t2.transaction_ts BETWEEN t1.transaction_ts - INTERVAL '20 minutes' AND t1.transaction_ts GROUP BY t1.txn_id, t1.card_id, t1.transaction_ts, t1.zip_code ) SELECT d.card_id, d.transaction_ts, COALESCE(d.zip_code,'UNKNOWN') AS zip_code, d.zip_cnt AS zip_count, DENSE_RANK() OVER (PARTITION BY d.card_id ORDER BY d.zip_cnt DESC) AS zip_cnt_rank FROM distinct_zip_counts d WHERE d.zip_cnt > 3 ORDER BY d.card_id, d.transaction_ts;",
+    "expectedOutputJson": "[{\"card_id\":1,\"transaction_ts\":\"2023-07-01T04:42:00.000Z\",\"zip_code\":\"94109\",\"zip_count\":4,\"zip_cnt_rank\":2},{\"card_id\":1,\"transaction_ts\":\"2023-07-01T04:48:00.000Z\",\"zip_code\":\"94111\",\"zip_count\":5,\"zip_cnt_rank\":1}]",
+    "explanation": "The query first joins each transaction (t1) to all transactions of the same card (t2) that fall within the 20‑minute window ending at t1.transaction_ts. The GROUP BY on t1 identifies each original transaction, and COUNT(DISTINCT ...) gives the number of unique zip codes (treating NULL as 'UNKNOWN') seen in that window. This aggregation avoids the prohibited DISTINCT‑in‑WINDOW‑FUNCTION syntax. The outer SELECT filters to windows where the distinct‑zip count exceeds three and adds a DENSE_RANK window function to rank transactions per card by the zip‑count, handling ties correctly. Finally, results are ordered by card and timestamp.",
+    "alternativeSql": "WITH recent_txns AS (\n    SELECT t1.txn_id,\n           t1.card_id,\n           t1.transaction_ts,\n           COALESCE(t1.zip_code,'UNKNOWN') AS zip_code,\n           (SELECT COUNT(*)\n            FROM (SELECT DISTINCT COALESCE(t2.zip_code,'UNKNOWN') AS z\n                  FROM transactions t2\n                  WHERE t2.card_id = t1.card_id\n                    AND t2.transaction_ts BETWEEN t1.transaction_ts - INTERVAL '20 minutes' AND t1.transaction_ts) sub) AS distinct_zip_cnt\n    FROM transactions t1\n)\nSELECT card_id, transaction_ts, zip_code, distinct_zip_cnt AS zip_count\nFROM recent_txns\nWHERE distinct_zip_cnt > 3\nORDER BY card_id, transaction_ts;",
+    "hints": [
+      "Use a self‑join to materialise the rolling window instead of a window frame with DISTINCT.",
+      "Apply COALESCE before counting distinct zip codes so NULLs become a real value.",
+      "Compute the rank in an outer query with DENSE_RANK() over the filtered result set."
+    ],
+    "verificationStatus": "AI_GENERATED",
+    "sourceUrl": "https://groq.com",
+    "sourceType": "AI Generated Practice (openai/gpt-oss-120b)",
+    "sourceNotes": "Verified via PGlite in-memory WebAssembly sandbox.",
+    "acceptanceRate": 85,
+    "totalAttempts": 1,
+    "totalSolved": 1,
+    "createdAt": "2026-11-02T17:48:32.561Z",
+    "updatedAt": "2026-11-02T17:48:32.561Z"
+  }
+]
