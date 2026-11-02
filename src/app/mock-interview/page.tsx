@@ -161,6 +161,20 @@ export default function MockInterviewPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [isSubmittingAll, setIsSubmittingAll] = useState(false);
   const [showConfirmFinishModal, setShowConfirmFinishModal] = useState(false);
+  const [dialect, setDialect] = useState<'SQL' | 'PostgreSQL'>('SQL');
+
+  // Load saved dialect from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('preferred_sql_dialect');
+    if (saved === 'SQL' || saved === 'PostgreSQL') {
+      setDialect(saved);
+    }
+  }, []);
+
+  const handleDialectChange = (newDialect: 'SQL' | 'PostgreSQL') => {
+    setDialect(newDialect);
+    localStorage.setItem('preferred_sql_dialect', newDialect);
+  };
 
   // Report State
   const [isEvaluating, setIsEvaluating] = useState(false);
@@ -224,6 +238,25 @@ export default function MockInterviewPage() {
   const handleRunQuery = async () => {
     const currentQ = selectedQuestions[activeQuestionIndex];
     if (!currentQ || isRunning) return;
+
+    const userSql = (userQueries[currentQ.id] || '').trim();
+
+    // Friendly validation: Did the candidate paste JSON output instead of writing a SQL query?
+    if (userSql.startsWith('[') || userSql.startsWith('{')) {
+      setExecutionResults(prev => ({
+        ...prev,
+        [currentQ.id]: {
+          passed: false,
+          errorMessage: '⚠️ You entered raw JSON output data instead of a SQL query. Please write a SQL statement (e.g. SELECT ... FROM ... WHERE ...) to query the tables and produce this output.',
+        },
+      }));
+      setSubmissionStatuses(prev => ({
+        ...prev,
+        [currentQ.id]: false,
+      }));
+      return;
+    }
+
     setIsRunning(true);
 
     try {
@@ -711,11 +744,61 @@ export default function MockInterviewPage() {
 
                   {/* TAB 4: EXPECTED OUTPUT */}
                   {activeTabLeft === 'expected' && (
-                    <div className="space-y-2">
-                      <p className="text-[11px] font-mono text-[#969EAA]">Expected Output JSON:</p>
-                      <pre className="p-3 rounded-xl bg-[#0B0D10] border border-[#29313D] text-[11px] font-mono text-[#F4F5F7] overflow-x-auto leading-relaxed">
-                        {JSON.stringify(JSON.parse(currentQ.expectedOutputJson || '[]'), null, 2)}
-                      </pre>
+                    <div className="space-y-3">
+                      <div className="p-2.5 rounded-lg bg-[#171C24] border border-[#29313D] text-[11px] text-[#A3E635] flex items-center justify-between">
+                        <span>💡 Target Result: Write a SQL query on the right that returns this table.</span>
+                      </div>
+
+                      {(() => {
+                        try {
+                          const rows = JSON.parse(currentQ.expectedOutputJson || '[]');
+                          if (Array.isArray(rows) && rows.length > 0) {
+                            const cols = Object.keys(rows[0]);
+                            return (
+                              <div className="rounded-xl border border-[#29313D] bg-[#0B0D10] overflow-hidden">
+                                <div className="overflow-x-auto max-h-[340px]">
+                                  <table className="w-full text-left font-mono text-[11px]">
+                                    <thead className="bg-[#171C24] text-[#A3E635] border-b border-[#29313D] sticky top-0">
+                                      <tr>
+                                        {cols.map((col) => (
+                                          <th key={col} className="px-3 py-2 font-semibold whitespace-nowrap">
+                                            {col}
+                                          </th>
+                                        ))}
+                                      </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-[#29313D] text-[#E2E8F0]">
+                                      {rows.map((row: any, rIdx: number) => (
+                                        <tr key={rIdx} className="hover:bg-[#171C24]/50">
+                                          {cols.map((col) => (
+                                            <td key={col} className="px-3 py-2 whitespace-nowrap text-[#F4F5F7]">
+                                              {row[col] === null ? (
+                                                <span className="text-rose-400 italic">NULL</span>
+                                              ) : (
+                                                String(row[col])
+                                              )}
+                                            </td>
+                                          ))}
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <div className="px-3 py-1.5 bg-[#171C24] border-t border-[#29313D] text-[10px] text-[#969EAA] font-mono flex items-center justify-between">
+                                  <span>{rows.length} rows in expected result</span>
+                                  <span className="text-emerald-400">Target Schema Verified</span>
+                                </div>
+                              </div>
+                            );
+                          }
+                        } catch (e) {}
+
+                        return (
+                          <pre className="p-3 rounded-xl bg-[#0B0D10] border border-[#29313D] text-[11px] font-mono text-[#F4F5F7] overflow-x-auto leading-relaxed">
+                            {currentQ.expectedOutputJson}
+                          </pre>
+                        );
+                      })()}
                     </div>
                   )}
 
@@ -727,12 +810,39 @@ export default function MockInterviewPage() {
               <div className="lg:col-span-7 flex flex-col rounded-2xl border border-[#29313D] bg-[#11151B] overflow-hidden">
                 
                 {/* Editor Header Bar */}
-                <div className="px-4 py-2.5 border-b border-[#29313D] bg-[#171C24] flex items-center justify-between text-xs">
+                <div className="px-4 py-2 border-b border-[#29313D] bg-[#171C24] flex items-center justify-between text-xs gap-2 flex-wrap sm:flex-nowrap">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[11px] font-bold text-[#A3E635] px-2 py-0.5 rounded bg-[#A3E635]/10 border border-[#A3E635]/30">
-                      PostgreSQL 16
+                    {/* Dual Dialect Options: SQL & PostgreSQL */}
+                    <div className="flex items-center bg-[#0B0D10] p-0.5 rounded-lg border border-[#29313D]">
+                      <button
+                        type="button"
+                        onClick={() => handleDialectChange('SQL')}
+                        className={`px-2.5 py-1 rounded-md text-xs font-mono font-semibold transition-all ${
+                          dialect === 'SQL'
+                            ? 'bg-[#A3E635] text-[#0B0D10] font-bold shadow-sm'
+                            : 'text-[#969EAA] hover:text-[#F4F5F7]'
+                        }`}
+                        title="Standard SQL for Data Analysis"
+                      >
+                        SQL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDialectChange('PostgreSQL')}
+                        className={`px-2.5 py-1 rounded-md text-xs font-mono font-semibold transition-all ${
+                          dialect === 'PostgreSQL'
+                            ? 'bg-[#A3E635] text-[#0B0D10] font-bold shadow-sm'
+                            : 'text-[#969EAA] hover:text-[#F4F5F7]'
+                        }`}
+                        title="PostgreSQL 16 Engine with full Window Functions"
+                      >
+                        PostgreSQL
+                      </button>
+                    </div>
+
+                    <span className="text-[11px] text-[#969EAA] hidden sm:inline font-mono">
+                      Autosaved in Sandbox
                     </span>
-                    <span className="text-[11px] text-[#969EAA]">Autosaved in Sandbox</span>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -762,8 +872,8 @@ export default function MockInterviewPage() {
                       }));
                     }}
                     onRun={handleRunQuery}
-                    dialect="SQL"
-                    placeholder={`-- Type your SQL solution for "${currentQ.title}" below:\n\nSELECT `}
+                    dialect={dialect}
+                    placeholder={`-- Type your ${dialect} solution for "${currentQ.title}" below:\n\nSELECT \n  \nFROM \nWHERE \nORDER BY ;`}
                   />
                 </div>
 
