@@ -1,0 +1,265 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  CANDIDATE
+  ADMIN
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum VerificationStatus {
+  VERIFIED_REAL
+  COMMUNITY_REPORTED
+  AI_GENERATED
+}
+
+enum SubmissionStatus {
+  PASSED
+  FAILED
+  RUNTIME_ERROR
+  TIMEOUT
+}
+
+enum TrackType {
+  SQL
+  PYTHON
+  STATISTICS
+  DATA_ANALYTICS
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String
+  passwordHash  String
+  role          Role      @default(CANDIDATE)
+  avatarUrl     String?
+  targetRole    String?   @default("Data Analyst")
+  xp            Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  submissions        Submission[]
+  bookmarks          Bookmark[]
+  conceptProgress    UserConceptProgress[]
+  streaks            UserStreak?
+  achievements       UserAchievement[]
+  mockSessions       MockInterviewSession[]
+  discussions        Discussion[]
+  aiGenerations      AIGenerationLog[]
+
+  @@index([email])
+}
+
+model Company {
+  id              String      @id @default(uuid())
+  name            String      @unique
+  slug            String      @unique
+  logoUrl         String?
+  industry        String      @default("Technology")
+  description     String
+  interviewFocus  String?
+  questions       Question[]
+
+  @@index([slug])
+}
+
+model Concept {
+  id                 String       @id @default(uuid())
+  track              TrackType    @default(SQL)
+  title              String
+  slug               String       @unique
+  order              Int          @default(0)
+  description        String
+  learningObjectives String[]
+  content            String?      @db.Text
+  cheatSheet         String?      @db.Text
+  questions          Question[]
+  userProgress       UserConceptProgress[]
+
+  @@index([slug])
+  @@index([track])
+}
+
+model Question {
+  id                 String              @id @default(uuid())
+  slug               String              @unique
+  title              String
+  difficulty         Difficulty
+  category           String              @default("SQL")
+  roleTarget         String              @default("Data Analyst")
+  problemStatement   String              @db.Text
+  schemaSql          String              @db.Text
+  seedSql            String              @db.Text
+  expectedOutputJson String              @db.Text
+  solutionSql        String              @db.Text
+  explanation        String              @db.Text
+  alternativeSql     String?             @db.Text
+  hints              String[]
+  
+  // Authenticity & Verification
+  verificationStatus VerificationStatus  @default(VERIFIED_REAL)
+  sourceUrl          String?
+  sourceType         String?             // e.g. "Public Interview Report", "Glassdoor Sourced", "Company Blog"
+  sourceNotes        String?
+  
+  // Relations
+  companyId          String?
+  company            Company?            @relation(fields: [companyId], references: [id])
+  primaryConceptId   String?
+  primaryConcept     Concept?            @relation(fields: [primaryConceptId], references: [id])
+  
+  // Metrics & Stats
+  acceptanceRate     Float               @default(75.0)
+  totalAttempts      Int                 @default(0)
+  totalSolved        Int                 @default(0)
+  
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  submissions        Submission[]
+  bookmarks          Bookmark[]
+  discussions        Discussion[]
+
+  @@index([slug])
+  @@index([difficulty])
+  @@index([verificationStatus])
+  @@index([companyId])
+  @@index([primaryConceptId])
+}
+
+model Submission {
+  id              String            @id @default(uuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId      String
+  question        Question          @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  querySql        String            @db.Text
+  status          SubmissionStatus
+  executionTimeMs Float             @default(0)
+  errorMessage    String?
+  userOutputJson  String?           @db.Text
+  createdAt       DateTime          @default(now())
+
+  @@index([userId])
+  @@index([questionId])
+  @@index([status])
+}
+
+model Bookmark {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId String
+  question   Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  notes      String?
+  createdAt  DateTime  @default(now())
+
+  @@unique([userId, questionId])
+  @@index([userId])
+}
+
+model UserConceptProgress {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conceptId       String
+  concept         Concept   @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+  masteryPercent  Float     @default(0)
+  questionsSolved Int       @default(0)
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([userId, conceptId])
+  @@index([userId])
+}
+
+model UserStreak {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak Int       @default(1)
+  longestStreak Int       @default(1)
+  lastActiveDate DateTime @default(now())
+  activityDates String[]  // YYYY-MM-DD strings for heatmap
+}
+
+model Achievement {
+  id          String    @id @default(uuid())
+  code        String    @unique
+  title       String
+  description String
+  icon        String
+  tier        String    @default("BRONZE")
+  xpReward    Int       @default(50)
+
+  users       UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  unlockedAt    DateTime    @default(now())
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+}
+
+model MockInterviewSession {
+  id           String    @id @default(uuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role         String    @default("Data Analyst")
+  score        Int       @default(0)
+  feedbackJson String    @db.Text
+  status       String    @default("COMPLETED")
+  createdAt    DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Discussion {
+  id         String    @id @default(uuid())
+  questionId String
+  question   Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content    String    @db.Text
+  upvotes    Int       @default(0)
+  createdAt  DateTime  @default(now())
+
+  @@index([questionId])
+}
+
+model AIGenerationLog {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic           String
+  difficulty      Difficulty
+  prompt          String    @db.Text
+  responseJson    String    @db.Text
+  duplicateScore  Float     @default(0)
+  isValidated     Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+
+  @@index([userId])
+}
+
