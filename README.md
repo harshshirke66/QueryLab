@@ -1,165 +1,218 @@
-# QUERYLAB
+<div align="center">
 
-> **Think in Queries. Crack Real Interviews.**
+# `QUERYLAB`
 
-QUERYLAB is a production-quality, premium Data Analytics and SQL Interview Preparation platform engineered for aspiring **Data Analysts, Data Scientists, Business Analysts, and Analytics Engineers**.
+### Think in Queries. Crack Real Interviews.
 
-Inspired by the authentic learning experience of DataLemur, QUERYLAB introduces an original dark-first design system, an isolated in-memory PostgreSQL execution engine powered by WebAssembly (PGlite), verified company interview questions, a 3-tier progressive Groq AI hint & tutoring assistant, automated duplicate prevention, and personalized performance telemetry.
+**A dark-first SQL & Data Analytics interview prep platform that runs real PostgreSQL in your browser, with an AI tutor that teaches instead of spoiling.**
 
----
+<br />
 
-## 🌟 Key Capabilities & Architectural Highlights
+![Next.js](https://img.shields.io/badge/Next.js-App_Router-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PGlite-WASM_Postgres-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+![Groq](https://img.shields.io/badge/Groq-Llama_3.3_70B-F55036?style=for-the-badge&logo=lightning&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-A3E635?style=for-the-badge)
 
-### 1. 100% Isolated PostgreSQL Sandbox (PGlite WebAssembly)
-- User queries never execute unsafely against production databases.
-- Every challenge runs in an isolated, ephemeral in-memory PostgreSQL engine (`@electric-sql/pglite`) in WebAssembly.
-- Supports full standard PostgreSQL syntax: Window Functions (`ROW_NUMBER`, `RANK`, `DENSE_RANK`, `LAG`, `LEAD`, `PERCENTILE_CONT`), Common Table Expressions (CTEs), Correlated Subqueries, Interval Arithmetic, and conditional aggregations.
-- Queries execute in sub-20ms with detailed column-by-column diff analysis and `EXPLAIN (VERBOSE, COSTS)` plan generation.
+<br />
 
-### 2. Transparent Authenticity & Verification System
-Every problem in the question catalog is strictly categorized:
-- **CATEGORY A — Verified Real Interview Questions**: Sourced from public candidate interview reports, company tech blogs, and documented interview experiences with verifiable source URLs.
-- **CATEGORY B — Community Reported Questions**: Candidate-reported problems from recent interview loops, clearly tagged and schema-verified.
-- **CATEGORY C — AI Generated Practice**: Synthesized on-demand via Groq (Llama 3.3 70B), verified for deterministic correctness in the PGlite sandbox, and checked for duplicates.
+[**Features**](#-features) · [**How It Works**](#-how-it-works) · [**Tech Stack**](#-tech-stack) · [**Author**](#-author)
 
-### 3. Groq AI Integration (Server-Side Only)
-- **AI Question Generator**: Synthesizes novel interview scenarios with schemas, seeds, solutions, and automated PGlite verification before publishing.
-- **Duplicate Prevention Engine**: Employs Jaccard token overlap, normalized Levenshtein distance, and semantic similarity scoring to reject duplicate questions ($> 0.70$ similarity threshold).
-- **Progressive 3-Tier AI Hints**:
-  - *Tier 1*: High-level relational conceptual direction.
-  - *Tier 2*: Relevant SQL function or syntax guidance (`DENSE_RANK`, `PARTITION BY`, `LAG`).
-  - *Tier 3*: Step-by-step logic trace without giving away the final code.
-- **AI Solution Explainer**: Breaks down query execution order (FROM $\to$ WHERE $\to$ GROUP BY $\to$ HAVING $\to$ SELECT $\to$ WINDOW $\to$ ORDER BY) and provides database indexing recommendations.
-- **Timed Mock Technical Interviewer**: Simulates live screening rounds and generates a candidate debrief report with readiness scores and weak concept diagnosis.
+<br />
 
-### 4. Comprehensive 4-Track Concept Syllabus
-1. **SQL Track**: SQL Fundamentals, Aggregations & Grouping, Table Joins, Subqueries & CTEs, Window Functions, and Analytical SQL (Cohort Retention curves, Rolling 7-day metrics).
-2. **Python Track**: Pandas DataFrames, boolean indexing, missing value handling, group-by aggregations, and EDA.
-3. **Statistics Track**: Summary statistics, probability distributions, A/B testing, p-values, hypothesis tests, and confidence intervals.
-4. **Data Analytics Track**: SaaS & consumer product KPIs (LTV, CAC, Churn Rate, ARPU, conversion funnels).
+</div>
 
 ---
 
-## 🛠️ Technology Stack
+## ✨ Why QueryLab?
 
-- **Frontend**: Next.js (App Router), TypeScript (Strict Mode), React, Tailwind CSS, Monaco Editor (`@monaco-editor/react`), Lucide React, Framer Motion, Recharts, Canvas-Confetti.
-- **Isolated SQL Execution**: `@electric-sql/pglite` (Official WebAssembly Postgres engine by ElectricSQL).
-- **Database & ORM**: Neon Serverless PostgreSQL with Prisma ORM (`@prisma/client`, `prisma`).
-- **AI**: Groq API (`groq-sdk`, Llama 3.3 70B Versatile).
-- **Caching & Rate Limiting**: Upstash Redis (`@upstash/redis` with automatic memory fallback).
-- **Authentication**: Better Auth / Session tokens with `jose`, PBKDF2 cryptographic hashing, and 1-Click Demo Profiles.
+Most interview-prep tools make you choose: realistic questions **or** a real database **or** useful feedback. QueryLab combines all three.
 
----
-
-## 🎨 Design System & Palette
-
-Crafted with a dark-first, Linear/Vercel/Stripe-inspired aesthetic:
-- **Base Background**: `#0B0D10`
-- **Secondary Background**: `#11151B`
-- **Surface**: `#171C24`
-- **Elevated Surface**: `#1D2430`
-- **Primary Accent**: `#A3E635` (Subtle Lime)
-- **Secondary Accent**: `#7C9EFF` (Soft Indigo)
-- **Border Base**: `#29313D`
-- **Typography**: System Geist / Inter font stack + Geist Mono for SQL coding.
+| | Typical SQL prep sites | **QueryLab** |
+|---|:---:|:---:|
+| Real PostgreSQL syntax (windows, CTEs, intervals) | Partial | ✅ Full |
+| Queries run in an isolated sandbox | Server-side | ✅ In your browser (WASM) |
+| Question source transparency | Rarely | ✅ Every question labeled A / B / C |
+| Hints that don't spoil the answer | ❌ | ✅ 3-tier progressive hints |
+| Duplicate-free AI-generated questions | ❌ | ✅ Similarity-checked |
+| Timed mock interview + debrief | Paid add-on | ✅ Built in |
 
 ---
 
-## 📁 Application Structure
+## 🚀 Features
 
+### 🧪 Isolated PostgreSQL Sandbox
+Every challenge runs in an **ephemeral in-memory Postgres** compiled to WebAssembly via [`@electric-sql/pglite`](https://github.com/electric-sql/pglite). Nothing touches a production database.
+
+- Window functions: `ROW_NUMBER`, `RANK`, `DENSE_RANK`, `LAG`, `LEAD`, `PERCENTILE_CONT`
+- CTEs, correlated subqueries, interval arithmetic, conditional aggregation
+- Column-by-column **result diff** against the expected output
+- `EXPLAIN (VERBOSE, COSTS)` plan viewer
+
+### ✅ Transparent Question Authenticity
+Every question carries a visible provenance badge:
+
+| Badge | Category | Meaning |
+|:---:|---|---|
+| 🟢 **A** | **Verified Real** | Sourced from public interview reports, company tech blogs, or documented experiences, **with a source URL** |
+| 🟡 **B** | **Community Reported** | Candidate-reported from recent interview loops, schema-verified |
+| 🔵 **C** | **AI Generated** | Synthesized by Groq, verified in the PGlite sandbox, and duplicate-checked |
+
+### 🤖 Groq AI Toolkit *(server-side only, keys never reach the browser)*
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**🪄 AI Question Generator**
+Creates novel scenarios with schema, seed data, and a reference solution, then **auto-verifies** them in PGlite before publishing.
+
+**🛡️ Duplicate Prevention Engine**
+Jaccard token overlap + normalized Levenshtein distance + semantic scoring. Anything above **0.70 similarity** is rejected.
+
+**🔍 AI Solution Explainer**
+Walks through logical execution order and suggests indexing strategies:
+`FROM → WHERE → GROUP BY → HAVING → SELECT → WINDOW → ORDER BY`
+
+</td>
+<td width="50%" valign="top">
+
+**💡 3-Tier Progressive Hints**
+
+| Tier | You get |
+|:---:|---|
+| 1 | Conceptual, relational direction |
+| 2 | The right function or syntax (`DENSE_RANK`, `PARTITION BY`, `LAG`) |
+| 3 | A step-by-step logic trace, **never the final code** |
+
+**🎙️ Timed Mock Interviewer**
+Simulates a live screening round, then produces a debrief with a **readiness score** and **weak-concept diagnosis**.
+
+</td>
+</tr>
+</table>
+
+### 📚 4-Track Concept Syllabus
+
+| Track | What you'll cover |
+|---|---|
+| 🗄️ **SQL** | Fundamentals · Aggregations · Joins · Subqueries & CTEs · Window Functions · Analytical SQL (cohort retention, rolling 7-day metrics) |
+| 🐍 **Python** | Pandas DataFrames · boolean indexing · missing values · group-by · EDA |
+| 📊 **Statistics** | Summary stats · distributions · A/B testing · p-values · hypothesis tests · confidence intervals |
+| 📈 **Data Analytics** | SaaS & consumer KPIs: LTV, CAC, churn, ARPU, conversion funnels |
+
+### 📊 Progress & Motivation
+- 16-week GitHub-style **activity heatmap**
+- Recharts **performance telemetry**
+- Global **leaderboard** with XP podium
+- Unlockable **badges**, bookmarks, and `Cmd+K` global search
+- One-click **demo profiles** so you can explore instantly
+
+---
+
+## 🧠 How It Works
+
+**Solving a question**
+
+```text
+  ┌──────────────────────┐     ┌──────────────────────┐
+  │  Write SQL           │ ──▶ │  Run in PGlite       │
+  │  (Monaco Editor)     │     │  (in-browser Postgres)│
+  └──────────────────────┘     └──────────┬───────────┘
+            ▲                             │
+            │                    Matches expected output?
+            │                      │                │
+            │                     NO               YES
+            │                      ▼                ▼
+            │            ┌───────────────────┐  ┌─────────────────────────┐
+            │            │ Column-level diff │  │ XP + heatmap + badges   │
+            │            └─────────┬─────────┘  │ + analytics/leaderboard │
+            │                      ▼            └─────────────────────────┘
+            │            ┌───────────────────┐
+            └─────────── │ 3-tier AI hints   │
+                         │ (Groq, server)    │
+                         └───────────────────┘
 ```
-src/
-├── app/
-│   ├── page.tsx                     # Landing Page with live SQL preview
-│   ├── login/page.tsx               # Authentication & 1-Click Demo accounts
-│   ├── dashboard/page.tsx           # Dashboard with 16-week GitHub-style heatmap
-│   ├── questions/page.tsx           # Question bank explorer with multi-filters
-│   ├── questions/[id]/page.tsx      # Flagship dual-pane SQL Workspace
-│   ├── concepts/page.tsx            # 4 Learning Tracks syllabus
-│   ├── concepts/[slug]/page.tsx     # Deep concept view with cheatsheet
-│   ├── companies/page.tsx           # Company interview directory
-│   ├── companies/[slug]/page.tsx    # Company interview profile
-│   ├── mock-interview/page.tsx      # Timed mock interview & AI scorecard
-│   ├── ai-assistant/page.tsx        # Groq AI Studio & Question Generator
-│   ├── analytics/page.tsx           # Recharts performance telemetry
-│   ├── leaderboard/page.tsx         # Global rankings & XP podium
-│   ├── profile/page.tsx             # Candidate profile & unlocked badges
-│   ├── admin/page.tsx               # Admin console & duplicate scanner
-│   ├── bookmarks/page.tsx           # Saved questions library
-│   └── api/                         # Route handlers (auth, sql, ai, bookmarks)
-├── components/
-│   ├── Navbar.tsx                   # Main navigation & role switcher
-│   ├── CommandMenu.tsx              # Cmd+K Global search modal
-│   ├── SqlWorkspace.tsx             # Monaco Editor + PGlite execution pane
-│   └── Footer.tsx                   # Footer & authenticity commitment
-└── lib/
-    ├── types.ts                     # Strict TypeScript interfaces
-    ├── sql-runner.ts                # PGlite execution & diff comparator
-    ├── groq.ts                      # Groq AI & duplicate prevention logic
-    ├── db.ts                        # Prisma Client singleton & mock store
-    ├── auth.ts                      # Session encryption & demo profiles
-    ├── redis.ts                     # Upstash Redis & in-memory cache
-    └── data/mock-data.ts            # 25+ curated real interview datasets
+
+**Publishing an AI-generated question**
+
+```text
+  Groq generates question
+            │
+            ▼
+  Run reference solution in PGlite sandbox
+            │
+            ▼
+  Compare against existing questions
+  (Jaccard + Levenshtein + semantic score)
+            │
+     ┌──────┴───────────────┐
+     ▼                      ▼
+  similarity > 0.70     similarity <= 0.70
+  REJECTED (duplicate)  PUBLISHED as Category C
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Tech Stack
 
-### 1. Clone & Install Dependencies
-```bash
-git clone <repository_url>
-cd querylab
-pnpm install
-```
+<div align="center">
 
-### 2. Environment Variables
-Copy `.env.example` to `.env`:
-```bash
-cp .env.example .env
-```
-Configure your credentials:
-```env
-# Neon Serverless PostgreSQL
-DATABASE_URL="postgresql://neondb_owner:password@ep-sample-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require"
-DIRECT_URL="postgresql://neondb_owner:password@ep-sample.us-east-2.aws.neon.tech/neondb?sslmode=require"
+| Layer | Technology |
+|---|---|
+| **Frontend** | Next.js (App Router) · React · TypeScript (strict) · Tailwind CSS |
+| **UI & Motion** | Monaco Editor · Framer Motion · Lucide React · Recharts · canvas-confetti |
+| **SQL Engine** | `@electric-sql/pglite` (WebAssembly Postgres by ElectricSQL) |
+| **Database / ORM** | Neon Serverless PostgreSQL · Prisma |
+| **AI** | Groq API · Llama 3.3 70B Versatile (`groq-sdk`) |
+| **Cache / Rate limit** | Upstash Redis (automatic in-memory fallback) |
+| **Auth** | Better Auth / session tokens via `jose` · PBKDF2 hashing · demo profiles |
 
-# Groq API for AI Question Generator, Hints & Mock Interviewer
-GROQ_API_KEY="gsk_your_groq_api_key_here"
-GROQ_MODEL="llama-3.3-70b-versatile"
-
-# Upstash Redis
-UPSTASH_REDIS_REST_URL="https://sample-redis.upstash.io"
-UPSTASH_REDIS_REST_TOKEN="your_upstash_redis_token"
-
-# Authentication
-BETTER_AUTH_SECRET="querylab_development_session_secret_1234567890"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-```
-*(Note: If environment keys are not configured, the application automatically falls back to deterministic local mock datasets and simulated AI responses so that all features remain 100% interactive out of the box).*
-
-### 3. Database Migration & Seeding
-```bash
-pnpm prisma:generate
-pnpm prisma:push
-pnpm seed
-```
-
-### 4. Start Development Server
-```bash
-pnpm dev
-```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+</div>
 
 ---
 
-## 👥 Demo Accounts (1-Click Instant Login)
+## 🎨 Design System
 
-No signup required for evaluation:
-- **Candidate Demo**: `candidate@querylab.dev` / `candidate123` (Alex Rivera, 850 XP, 5-day streak)
-- **Admin Demo**: `admin@querylab.dev` / `admin123` (Sarah Chen, Lead Interview Architect & Question Verifier)
+A dark-first interface inspired by Linear, Vercel, and Stripe.
+
+| Token | Hex | Preview |
+|---|---|:---:|
+| Base background | `#0B0D10` | ![](https://placehold.co/60x20/0B0D10/0B0D10) |
+| Secondary background | `#11151B` | ![](https://placehold.co/60x20/11151B/11151B) |
+| Surface | `#171C24` | ![](https://placehold.co/60x20/171C24/171C24) |
+| Elevated surface | `#1D2430` | ![](https://placehold.co/60x20/1D2430/1D2430) |
+| Border | `#29313D` | ![](https://placehold.co/60x20/29313D/29313D) |
+| **Primary accent** (Lime) | `#A3E635` | ![](https://placehold.co/60x20/A3E635/A3E635) |
+| **Secondary accent** (Indigo) | `#7C9EFF` | ![](https://placehold.co/60x20/7C9EFF/7C9EFF) |
+
+**Typography:** Geist / Inter for UI, Geist Mono for SQL.
 
 ---
 
-## 🛡️ License
-MIT License. Built for production interview preparation.
+## 👨‍💻 Author
+
+**Designed and built by [Harsh Shirke](https://github.com/harshshirke66)**
+
+[![GitHub](https://img.shields.io/badge/GitHub-harshshirke66-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/harshshirke66)
+
+---
+
+## 📜 License
+
+Released under the [MIT License](./LICENSE).
+
+<div align="center">
+
+<br />
+
+**If QueryLab helps you land an interview, drop a ⭐ on the repo.**
+
+<sub>Built for people who think in queries.</sub>
+
+<br />
+
+<sub>© 2026 Harsh Shirke · <a href="https://github.com/harshshirke66">@harshshirke66</a> · All rights reserved.</sub>
+
+</div>
