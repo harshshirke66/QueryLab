@@ -199,13 +199,6 @@ A dark-first interface inspired by Linear, Vercel, and Stripe.
 
 ---
 
-## 👥 Demo Accounts (1-Click Instant Login)
-
-No signup required for evaluation:
-- **Candidate Demo**: `candidate@querylab.dev` / `candidate123` (Alex Rivera, 850 XP, 5-day streak)
-- **Admin Demo**: `admin@querylab.dev` / `admin123` (Sarah Chen, Lead Interview Architect & Question Verifier)
-
----
 
 ## 🛡️ License
 MIT License. Built for production interview preparation.
